@@ -15,11 +15,30 @@
 # limitations under the License.
 #
 import webapp2
+import json
 
 class MainHandler(webapp2.RequestHandler):
     def get(self):
         self.response.write('Hello world!')
 
+class NotificationHandler(webapp2.RequestHandler):
+	def parse_notification(request_body):
+		"""Parse a request body into a notification dict.
+
+		Params:
+		request_body: The notification payload sent by the Mirror API as a string.
+		Returns:
+		Dict representing the notification payload.
+		"""
+		return json.load(request_body)
+
+class ImageHandler(webapp2.RequestHandler):
+    def get(self, image_id):
+        self.response.write('This is the ImageHandler. '
+            'The image id is %s' % image_id)
+
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    (r'/', MainHandler),
+    (r'/notification', NotificationHandler),
+    (r'/images/(\d+)', ImageHandler),
 ], debug=True)
