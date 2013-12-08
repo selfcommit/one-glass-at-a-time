@@ -16,10 +16,27 @@
 #
 import webapp2
 import json
+import logging
+
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
+from apiclient.discovery import build
+
+
 
 class MainHandler(webapp2.RequestHandler):
-    def get(self):
-        self.response.write('Hello world!')
+	def get(self):
+		self.response.write('<b>Derpy Glass!</b>')
+		CLIENTSECRETS_LOCATION = 'client_secrets.json'
+		REDIRECT_URI = 'http://one-glass-at-a-time.appspot.com/oauth2callback'
+		SCOPES = [
+    	'https://www.googleapis.com/auth/glass.timeline',
+    	'https://www.googleapis.com/auth/userinfo.profile',
+    	# Add other requested scopes.
+		]
+		flow = flow_from_clientsecrets('client_secrets.json',
+                               scope='https://www.googleapis.com/auth/calendar',
+                               redirect_uri='http://example.com/auth_return')
 
 class NotificationHandler(webapp2.RequestHandler):
 	def parse_notification(request_body):
@@ -33,12 +50,12 @@ class NotificationHandler(webapp2.RequestHandler):
 		return json.load(request_body)
 
 class ImageHandler(webapp2.RequestHandler):
-    def get(self, image_id):
-        self.response.write('This is the ImageHandler. '
-            'The image id is %s' % image_id)
+	def get(self, image_id):
+		self.response.write('This is the ImageHandler. '
+			'The image id is %s' % image_id)
 
 app = webapp2.WSGIApplication([
-    (r'/', MainHandler),
-    (r'/notification', NotificationHandler),
-    (r'/images/(\d+)', ImageHandler),
+	(r'/', MainHandler),
+	(r'/notification', NotificationHandler),
+	(r'/images/(\d+)', ImageHandler),
 ], debug=True)
