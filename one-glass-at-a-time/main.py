@@ -51,19 +51,18 @@ class oauth2callback(webapp2.RequestHandler):
 		http = httplib2.Http()
 		http = credentials.authorize(http)
 		service = build('mirror', 'v1', http=http)
-		subscriptions = service.subscriptions().list().execute()
 
 		#verify_token = 'Verify token: %s' % subscription.get('verifyToken')
 		#print 'Callback URL: %s' % subscription.get('callbackUrl')
-		#resp, content = http.request(
-		#uri='https://www.googleapis.com/mirror/v1/subscriptions',
-		#method='POST',
-		#headers={'Content-Type': 'application/json; charset=UTF-8'},
-		#body=dumps(dictionary),
-		#)
-		#self.response.write('<br> On to <a href="/bigshow">The Main App</a><br>')
-		#storage= Storage('creds.txt')
-		#storage.put(credentials)
+
+	def subscribe_to_notifications(service):
+		collection="timeline"
+		callback_url='http://one-glass-at-a-time.appspot.com/notification'
+		subscription = {
+		'collection': collection,
+		'callbackUrl': callback_url
+		}
+		service.subscriptions().insert(body=subscription).execute()
 
 class bigshow(webapp2.RequestHandler):
 	def get(self):
