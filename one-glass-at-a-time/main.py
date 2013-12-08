@@ -50,7 +50,7 @@ class oauth2callback(webapp2.RequestHandler):
 		credentials = flow.step2_exchange(code)
 		http = httplib2.Http()
 		http = credentials.authorize(http)
-
+		#https://www.googleapis.com/mirror/v1/subscriptions
 		#self.response.write('<br> On to <a href="/bigshow">The Main App</a><br>')
 		#storage= Storage('creds.txt')
 		#storage.put(credentials)
