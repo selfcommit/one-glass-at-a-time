@@ -35,9 +35,11 @@ class MainHandler(webapp2.RequestHandler):
     	# Add other requested scopes.
 		]
 		flow = flow_from_clientsecrets('client_secrets.json',
-                               scope='https://www.googleapis.com/auth/calendar',
-                               redirect_uri='http://example.com/auth_return')
-
+                               scope=SCOPES,
+                               redirect_uri=REDIRECT_URI)
+		auth_uri = flow.step1_get_authorize_url()
+		#Redirect the user to auth_uri on your platform.
+		self.response.write('<br><a href="'+auth_uri+'">'+auth_uri+'</a>')
 class NotificationHandler(webapp2.RequestHandler):
 	def parse_notification(request_body):
 		"""Parse a request body into a notification dict.
