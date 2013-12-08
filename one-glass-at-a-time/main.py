@@ -50,10 +50,21 @@ class oauth2callback(webapp2.RequestHandler):
 		credentials = flow.step2_exchange(code)
 		http = httplib2.Http()
 		http = credentials.authorize(http)
-		#https://www.googleapis.com/mirror/v1/subscriptions
+		service = build('mirror', 'v1', http=http)
+		subscriptions = service.subscriptions().list().execute()
+
+		#verify_token = 'Verify token: %s' % subscription.get('verifyToken')
+		#print 'Callback URL: %s' % subscription.get('callbackUrl')
+		#resp, content = http.request(
+		#uri='https://www.googleapis.com/mirror/v1/subscriptions',
+		#method='POST',
+		#headers={'Content-Type': 'application/json; charset=UTF-8'},
+		#body=dumps(dictionary),
+		#)
 		#self.response.write('<br> On to <a href="/bigshow">The Main App</a><br>')
 		#storage= Storage('creds.txt')
 		#storage.put(credentials)
+
 class bigshow(webapp2.RequestHandler):
 	def get(self):
 		self.response.write('The Big show!')
