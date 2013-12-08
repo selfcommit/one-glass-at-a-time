@@ -17,29 +17,47 @@
 import webapp2
 import json
 import logging
+import httplib2
 
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
+from oauth2client.file import Storage
 from apiclient.discovery import build
 
-
-
-class MainHandler(webapp2.RequestHandler):
-	def get(self):
-		self.response.write('<b>Derpy Glass!</b>')
-		CLIENTSECRETS_LOCATION = 'client_secrets.json'
-		REDIRECT_URI = 'http://one-glass-at-a-time.appspot.com/oauth2callback'
-		SCOPES = [
+CLIENTSECRETS_LOCATION = 'client_secrets.json'
+REDIRECT_URI = 'http://one-glass-at-a-time.appspot.com/oauth2callback'
+SCOPES = [
     	'https://www.googleapis.com/auth/glass.timeline',
     	'https://www.googleapis.com/auth/userinfo.profile',
     	# Add other requested scopes.
 		]
-		flow = flow_from_clientsecrets('client_secrets.json',
+flow = flow_from_clientsecrets('client_secrets.json',
                                scope=SCOPES,
                                redirect_uri=REDIRECT_URI)
+
+class MainHandler(webapp2.RequestHandler):
+	def get(self):
+		self.response.write('<b>Derpy Glass!</b>')
 		auth_uri = flow.step1_get_authorize_url()
 		#Redirect the user to auth_uri on your platform.
 		self.response.write('<br><a href="'+auth_uri+'">'+auth_uri+'</a>')
+
+class oauth2callback(webapp2.RequestHandler):
+	def get(self):
+		self.response.write('You Made it!<br>')
+		code=self.request.get('code')
+		self.response.write(code)
+		credentials = flow.step2_exchange(code)
+		http = httplib2.Http()
+		http = credentials.authorize(http)
+
+		#self.response.write('<br> On to <a href="/bigshow">The Main App</a><br>')
+		#storage= Storage('creds.txt')
+		#storage.put(credentials)
+class bigshow(webapp2.RequestHandler):
+	def get(self):
+		self.response.write('The Big show!')
+
 class NotificationHandler(webapp2.RequestHandler):
 	def parse_notification(request_body):
 		"""Parse a request body into a notification dict.
@@ -60,4 +78,7 @@ app = webapp2.WSGIApplication([
 	(r'/', MainHandler),
 	(r'/notification', NotificationHandler),
 	(r'/images/(\d+)', ImageHandler),
+	(r'/oauth2callback',oauth2callback),
+	(r'/oauth2callback',oauth2callback),
+	(r'/bigshow',bigshow),
 ], debug=True)
